@@ -120,11 +120,17 @@ public static class ItemStackExtensions
 
     public static float GetWorkableTemperature(this ItemStack stack)
     {
-        var meltingPoint = stack.Collectible.CombustibleProps?.MeltingPoint
+        var ret = stack.ItemAttributes?["workableTemperature"]?.AsFloat(-1) ?? -1;
+        if (ret == -1)
+        {
+            var meltingPoint = stack.Collectible.CombustibleProps?.MeltingPoint
                            ?? stack.GetOrCacheMetalMaterial(Core.Api)?.MetalBitItem?.CombustibleProps?.MeltingPoint
                            ?? 0f;
-        var defaultTemperature = meltingPoint / 2f;
-        return stack.ItemAttributes?["workableTemperature"]?.AsFloat(defaultTemperature) ?? defaultTemperature;
+            return meltingPoint / 2f;
+        } else
+        {
+            return ret;
+        }        
     }
 
     public static SmithingRecipe? GetSmithingRecipe(this ItemStack toolHead, ICoreAPI api)
